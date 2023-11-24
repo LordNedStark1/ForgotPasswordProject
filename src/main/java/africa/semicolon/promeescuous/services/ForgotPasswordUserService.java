@@ -3,8 +3,12 @@ package africa.semicolon.promeescuous.services;
 
 import africa.semicolon.promeescuous.config.AppConfig;
 import africa.semicolon.promeescuous.dto.request.EmailNotificationRequest;
+import africa.semicolon.promeescuous.dto.request.ForgotPasswordRequest;
 import africa.semicolon.promeescuous.dto.request.Recipient;
+import africa.semicolon.promeescuous.dto.response.ForgotPasswordResponse;
+import africa.semicolon.promeescuous.dto.response.OtpVerificationResponse;
 import africa.semicolon.promeescuous.dto.response.RegistrationResponse;
+import africa.semicolon.promeescuous.dto.response.ResetPasswordResponse;
 import africa.semicolon.promeescuous.exceptions.UserNotFoundException;
 import africa.semicolon.promeescuous.models.User;
 import africa.semicolon.promeescuous.repositories.UserRepository;
@@ -13,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 import static africa.semicolon.promeescuous.utils.AppUtil.*;
-import static africa.semicolon.promeescuous.utils.JwtUtil.extractEmailFrom;
-import static africa.semicolon.promeescuous.utils.JwtUtil.isValidJwt;
 
 @Service
 @Slf4j
@@ -43,73 +44,57 @@ public class ForgotPasswordUserService implements UserService {
     }
 
     @Override
-    public String forgetPassword(String email){
+    public ForgotPasswordResponse forgetPassword(String email){
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User not found"));
 
-        EmailNotificationRequest request = buildEmailRequest(user);
+        String otp = otpService.generateOtp(user.getEmail());
+        EmailNotificationRequest request = buildEmailRequest(user, otp);
         mailService.send(request);
 
-        return "Check your mail for a verification link.";
-    }
+        return ForgotPasswordResponse.builder()
+                .email(user.getEmail())
+                .message("Check your mail for a verification link.")
+                .otpForTest(otp)
+                .build();
 
-    @Override
-    public String activateNewPassword(String token) {
-        boolean isTestToken = token.equals(appConfig.getTestToken());
-        if (isTestToken) return  "testToken";
-        boolean isValidJwt = isValidJwt(token);
-        if (isValidJwt) return activateAccount(token);
-        throw new UserNotFoundException(
-                "ACCOUNT_ACTIVATION_FAILED_EXCEPTION");
-    }
-
-    @Override
-    public String getUserById(Long id) {
-        Optional<User> foundUser = userRepository.findById(id);
-        User user = foundUser.orElseThrow(
-                ()->new UserNotFoundException("USER_NOT_FOUND_EXCEPTION")
-        );
-        User getUserResponse = buildUserResponse(user);
-        return "activated";
     }
 
     public User findUserById(Long id){
         Optional<User> foundUser = userRepository.findById(id);
-        User user = foundUser.orElseThrow(()->new UserNotFoundException("USER_NOT_FOUND_EXCEPTION"));
-        return user;
+      return foundUser.orElseThrow(()->new UserNotFoundException("USER_NOT_FOUND_EXCEPTION"));
+    }
+    @Override
+    public OtpVerificationResponse verifyOtp(String otpToVerify) {
+       return otpService.verifyOtp(otpToVerify);
     }
 
+    @Override
+    public ResetPasswordResponse resetPassword(ForgotPasswordRequest forgotPasswordRequest) {
+        User user = findUserByEmail(forgotPasswordRequest.getEmail());
+        String password = forgotPasswordRequest.getNewPassword();
+        user.setPassword( password);
 
-    private String activateAccount(String token) {
-        String email = extractEmailFrom(token);
-        Optional<User> user = userRepository.findByEmail(email);
-        User foundUser = user.orElseThrow(()->new UserNotFoundException(
-                String.format("USER_WITH_EMAIL_NOT_FOUND_EXCEPTION")
-        ));
+        userRepository.save(user);
 
-        User savedUser = userRepository.save(foundUser);
-        User userResponse = buildUserResponse(savedUser);
-        return "userResponse";
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        resetPasswordResponse.setEmail(user.getEmail());
+        resetPasswordResponse.setMessage("Password reset successful");
+
+        return resetPasswordResponse;
     }
 
-    private static User buildUserResponse(User savedUser) {
-        return User.builder()
-                .id(savedUser.getId())
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .email(savedUser.getEmail())
-                .build();
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found"));
     }
 
-
-    private EmailNotificationRequest buildEmailRequest(User savedUser){
+    private EmailNotificationRequest buildEmailRequest(User savedUser, String otp){
         EmailNotificationRequest request =new EmailNotificationRequest();
 
         Recipient recipient = new Recipient(savedUser.getEmail());
 
         request.setRecipients(recipient);
         request.setSubject(WELCOME_MAIL_SUBJECT);
-        String otp = otpService.generateOtp(savedUser.getEmail());
 
         String emailTemplate = getMailTemplate();
         String mailContent = String.format(emailTemplate, otp);
