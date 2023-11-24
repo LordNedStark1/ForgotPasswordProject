@@ -33,6 +33,7 @@ public class OtpServiceImpl implements OtpService{
     }
 
     private String generateNewOtp() {
+        //This is returned for test sake. Implement your own generator method.
         return "1234";
     }
 

@@ -26,6 +26,7 @@ public class UserServiceTest {
 
     @Test
     public void deleteAllUsers(){
+        //once you run this test it will delete all users in the database
         log.info(userService.deleteAllUsers());
     }
     @Test
@@ -35,23 +36,35 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testForgotPasswordWithCorrectOtp(){
+    public void testForgotPasswordWithCorrectOtpWorks(){
         RegistrationResponse regResponse = userService.register("ned@gmail.com", "12345");
         assertEquals("Registration successful", regResponse.getMessage());
 
+        // an otp is sent to the users email.
+        // For this test purpose the otp is also sent through ForgotPasswordResponse for automated testing
         ForgotPasswordResponse forgotPasswordResponse = userService.forgetPassword(regResponse.getEmail());
 
+        //it's expected that user verifies the otp first
         OtpVerificationResponse verificationResponse = userService.verifyOtp(forgotPasswordResponse.getOtpForTest());
 
         assertTrue(verificationResponse.isVerified());
         assertEquals(regResponse.getEmail(), verificationResponse.getEmail());
 
-        ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("password", verificationResponse.getEmail());
+        ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("changedPassword1", verificationResponse.getEmail());
 
+        //after otp confirmation, the user proceeds to reset their password
         ResetPasswordResponse resetPasswordResponse = userService.resetPassword(forgotPasswordRequest);
 
         assertEquals("Password reset successful",resetPasswordResponse.getMessage());
         assertEquals(regResponse.getEmail(), resetPasswordResponse.getEmail());
+
+    }
+    @Test
+    public void testForgotPasswordWithCorrectOtpDoesNotWork(){
+        RegistrationResponse regResponse = userService.register("ned@gmail.com", "12345");
+        assertEquals("Registration successful", regResponse.getMessage());
+
+        ForgotPasswordResponse forgotPasswordResponse = userService.forgetPassword(regResponse.getEmail());
 
     }
 

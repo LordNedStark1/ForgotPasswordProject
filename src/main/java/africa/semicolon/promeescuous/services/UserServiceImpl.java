@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RegistrationResponse register(String email, String password) {
+
+        //This regeistration was made simple because of test purpose.
+        //The main aim is not to register to work on forgot password and reset password methods
         User foundUser = userRepository.getUserByEmail(email);
 
         if(foundUser == null) {
@@ -56,6 +59,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(()->new UserNotFoundException("User not found"));
 
         String otp = otpService.generateOtp(user.getEmail());
+
+        //buildEmailRequest method is created so that the otp can be sent to the users email.
         EmailNotificationRequest request = buildEmailRequest(user, otp);
         mailService.send(request);
 
