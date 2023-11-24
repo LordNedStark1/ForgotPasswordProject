@@ -4,7 +4,7 @@ import africa.semicolon.promeescuous.dto.response.OtpVerificationResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ForgotPasswordOtpService implements OtpService{
+public class OtpServiceImpl implements OtpService{
 
     @Override
     public String generateOtp(String email) {

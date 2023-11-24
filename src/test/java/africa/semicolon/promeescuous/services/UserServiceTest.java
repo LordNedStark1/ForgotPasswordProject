@@ -20,16 +20,20 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Slf4j
-@Sql(scripts = {"/db/insert.sql"})
 public class UserServiceTest {
     @Autowired
     private UserService userService;
 
     @Test
+    public void deleteAllUsers(){
+        log.info(userService.deleteAllUsers());
+    }
+    @Test
     public void testThatUserCanRegister(){
         RegistrationResponse response = userService.register("ned@gmail.com", "12345");
         assertEquals("Registration successful", response.getMessage());
     }
+
     @Test
     public void testForgotPasswordWithCorrectOtp(){
         RegistrationResponse regResponse = userService.register("ned@gmail.com", "12345");
@@ -50,6 +54,7 @@ public class UserServiceTest {
         assertEquals(regResponse.getEmail(), resetPasswordResponse.getEmail());
 
     }
+
 
     private ForgotPasswordRequest buildForgotPasswordRequest(String password, String email) {
         ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();

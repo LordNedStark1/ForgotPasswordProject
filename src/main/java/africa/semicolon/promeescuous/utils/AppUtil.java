@@ -15,15 +15,15 @@ public class AppUtil {
 
     public static final String EMPTY_STRING="";
 
-    public static String getMailTemplate() {
-        Path templateLocation = Paths.get(MAIL_TEMPLATE_LOCATION);
-        try {
-            List<String> fileContents = Files.readAllLines(templateLocation);
-            String template = String.join(EMPTY_STRING, fileContents);
-            return template;
-        }catch (IOException exception){
-            throw new UserNotFoundException(exception.getMessage());
-        }
-    }
+//    public static String getMailTemplate() {
+//        Path templateLocation = Paths.get(MAIL_TEMPLATE_LOCATION);
+//        try {
+//            List<String> fileContents = Files.readAllLines(templateLocation);
+//            String template = String.join(EMPTY_STRING, fileContents);
+//            return template;
+//        }catch (IOException exception){
+//            throw new UserNotFoundException(exception.getMessage());
+//        }
+//    }
 
 }

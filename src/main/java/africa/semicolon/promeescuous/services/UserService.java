@@ -13,10 +13,12 @@ public interface UserService {
 
     ForgotPasswordResponse forgetPassword(String email);
 
-    User findUserById(Long id);
+    User findUserById(String id);
 
 
     OtpVerificationResponse verifyOtp(String otpToVerify);
 
     ResetPasswordResponse resetPassword(ForgotPasswordRequest forgotPasswordRequest);
+
+    String deleteAllUsers();
 }

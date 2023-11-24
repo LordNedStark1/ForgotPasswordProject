@@ -21,7 +21,7 @@ import static africa.semicolon.promeescuous.utils.AppUtil.*;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class ForgotPasswordUserService implements UserService {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final MailService mailService;
 
@@ -29,15 +29,22 @@ public class ForgotPasswordUserService implements UserService {
 
     @Override
     public RegistrationResponse register(String email, String password) {
+        User foundUser = userRepository.getUserByEmail(email);
 
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
+        if(foundUser == null) {
+            foundUser.setEmail(email);
+            foundUser.setPassword(password);
 
-        User savedUser = userRepository.save(user);
 
+            User savedUser = userRepository.save(foundUser);
+
+            return RegistrationResponse.builder()
+                    .email(savedUser.getEmail())
+                    .message( "Registration successful")
+                    .build();
+        }
         return RegistrationResponse.builder()
-                .email(savedUser.getEmail())
+                .email(foundUser.getEmail())
                 .message( "Registration successful")
                 .build();
     }
@@ -59,7 +66,7 @@ public class ForgotPasswordUserService implements UserService {
 
     }
 
-    public User findUserById(Long id){
+    public User findUserById(String  id){
         Optional<User> foundUser = userRepository.findById(id);
       return foundUser.orElseThrow(()->new UserNotFoundException("USER_NOT_FOUND_EXCEPTION"));
     }
@@ -95,12 +102,14 @@ public class ForgotPasswordUserService implements UserService {
         request.setRecipients(recipient);
         request.setSubject(WELCOME_MAIL_SUBJECT);
 
-        String emailTemplate = getMailTemplate();
+        String emailTemplate = "" ;//getMailTemplate();
         String mailContent = String.format(emailTemplate, otp);
         request.setMailContent(mailContent);
         return request;
     }
-
-
-
+    @Override
+    public String deleteAllUsers(){
+        userRepository.deleteAll();
+        return "Every user deleted";
+    }
 }
