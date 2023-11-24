@@ -1,6 +1,5 @@
 package africa.semicolon.promeescuous.services;
 
-import africa.semicolon.promeescuous.config.AppConfig;
 import africa.semicolon.promeescuous.dto.request.EmailNotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class BrevoMailService implements MailService{
     //TODO: Remove hardcoded values
-    private final AppConfig appConfig;
     @Override
     public String send(EmailNotificationRequest emailNotificationRequest) {
 //        String brevoMailAddress = "https://api.brevo.com/v3/smtp/email";

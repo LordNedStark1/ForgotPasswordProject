@@ -1,7 +1,6 @@
 package africa.semicolon.promeescuous.services;
 
 
-import africa.semicolon.promeescuous.config.AppConfig;
 import africa.semicolon.promeescuous.dto.request.EmailNotificationRequest;
 import africa.semicolon.promeescuous.dto.request.ForgotPasswordRequest;
 import africa.semicolon.promeescuous.dto.request.Recipient;
@@ -25,7 +24,7 @@ import static africa.semicolon.promeescuous.utils.AppUtil.*;
 public class ForgotPasswordUserService implements UserService {
     private final UserRepository userRepository;
     private final MailService mailService;
-    private final AppConfig appConfig;
+
     private final OtpService otpService;
 
     @Override
