@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Setter
 @Document
-public class Notification {
+public class Otp {
     @Id
     private Long id;
 
