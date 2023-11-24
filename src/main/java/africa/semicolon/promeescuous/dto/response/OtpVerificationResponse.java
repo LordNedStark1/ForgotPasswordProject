@@ -8,4 +8,5 @@ import lombok.Data;
 public class OtpVerificationResponse {
     private boolean isVerified;
     private String email;
+
 }

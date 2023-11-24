@@ -1,19 +1,21 @@
 package africa.semicolon.promeescuous.models;
 
 
+import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
 @Setter
+@Getter
 @Document
 public class Otp {
     @Id
-    private Long id;
+    private String id;
 
-    private String content;
-    private Long sender;
+    private String email;
+    private String otp;
+    private boolean isActive;
 
-    private User user;
 }

@@ -44,7 +44,7 @@ public class UserServiceTest {
         OtpVerificationResponse verificationResponse = userService.verifyOtp(forgotPasswordResponse.getOtpForTest());
 
         assertTrue(verificationResponse.isVerified());
-        assertEquals(verificationResponse.getEmail(), regResponse.getEmail());
+        assertEquals(regResponse.getEmail(), verificationResponse.getEmail());
 
         ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("password", verificationResponse.getEmail());
 

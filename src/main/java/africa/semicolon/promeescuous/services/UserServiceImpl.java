@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
         User foundUser = userRepository.getUserByEmail(email);
 
         if(foundUser == null) {
+            foundUser = new User();
             foundUser.setEmail(email);
             foundUser.setPassword(password);
 
