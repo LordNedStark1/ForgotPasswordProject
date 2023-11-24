@@ -35,8 +35,20 @@ public class UserServiceTest {
         RegistrationResponse response = userService.register("ned@gmail.com", "12345");
         assertEquals("Registration successful", response.getMessage());
     }
-
     @Test
+    public void testResetPasswordMethod() {
+        RegistrationResponse regResponse = userService.register("nedBen@gmail.com", "firstPasswrod12345");
+        assertEquals("Registration successful", regResponse.getMessage());
+
+        ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("simplePaswordChange", regResponse.getEmail());
+        ResetPasswordResponse resetPasswordResponse = userService.resetPassword(forgotPasswordRequest);
+
+        assertEquals("Password reset successful",resetPasswordResponse.getMessage());
+        assertEquals(regResponse.getEmail(), resetPasswordResponse.getEmail());
+
+    }
+
+        @Test
     public void testForgotPasswordWithCorrectOtpWorks(){
         RegistrationResponse regResponse = userService.register("ned@gmail.com", "12345");
         assertEquals("Registration successful", regResponse.getMessage());

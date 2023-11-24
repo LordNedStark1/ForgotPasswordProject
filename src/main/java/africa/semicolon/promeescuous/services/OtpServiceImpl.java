@@ -5,12 +5,18 @@ import africa.semicolon.promeescuous.exceptions.InvalidOtp;
 import africa.semicolon.promeescuous.models.Otp;
 import africa.semicolon.promeescuous.repositories.OtpRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OtpServiceImpl implements OtpService{
     private final OtpRepository otpRepository;
+
+    //attribute counter was added for test purposes
+    //do ensure to remove attribute counter once test and code is modified and reviewed.
+    // attribute counter should not be used in production
+    private int counter ;
 
     @Override
     public String generateOtp(String email) {
@@ -34,7 +40,8 @@ public class OtpServiceImpl implements OtpService{
 
     private String generateNewOtp() {
         //This is returned for test sake. Implement your own generator method.
-        return "1234";
+        counter++;
+        return "1234"+counter;
     }
 
     @Override
