@@ -7,6 +7,7 @@ import africa.semicolon.promeescuous.dto.response.OtpVerificationResponse;
 import africa.semicolon.promeescuous.dto.response.RegistrationResponse;
 
 import africa.semicolon.promeescuous.dto.response.ResetPasswordResponse;
+import africa.semicolon.promeescuous.exceptions.InvalidOtp;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class UserServiceTest {
         assertTrue(verificationResponse.isVerified());
         assertEquals(regResponse.getEmail(), verificationResponse.getEmail());
 
-        ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("changedPassword1", verificationResponse.getEmail());
+        ForgotPasswordRequest forgotPasswordRequest = buildForgotPasswordRequest("changedPassword", verificationResponse.getEmail());
 
         //after otp confirmation, the user proceeds to reset their password
         ResetPasswordResponse resetPasswordResponse = userService.resetPassword(forgotPasswordRequest);
@@ -61,10 +62,13 @@ public class UserServiceTest {
     }
     @Test
     public void testForgotPasswordWithCorrectOtpDoesNotWork(){
-        RegistrationResponse regResponse = userService.register("ned@gmail.com", "12345");
+        RegistrationResponse regResponse = userService.register("benjamin@gmail.com", "12345");
         assertEquals("Registration successful", regResponse.getMessage());
 
         ForgotPasswordResponse forgotPasswordResponse = userService.forgetPassword(regResponse.getEmail());
+        String exceptionMessage = "Otp might be invalid or expired. Please try again, or request another otp";
+       assertThrows(InvalidOtp.class,()-> userService.verifyOtp("wrongOtp"));
+
 
     }
 

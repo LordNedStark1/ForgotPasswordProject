@@ -1,7 +1,7 @@
 package africa.semicolon.promeescuous.services;
 
 import africa.semicolon.promeescuous.dto.response.OtpVerificationResponse;
-import africa.semicolon.promeescuous.exceptions.OtpNotFoundException;
+import africa.semicolon.promeescuous.exceptions.InvalidOtp;
 import africa.semicolon.promeescuous.models.Otp;
 import africa.semicolon.promeescuous.repositories.OtpRepository;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,8 @@ public class OtpServiceImpl implements OtpService{
     @Override
     public OtpVerificationResponse verifyOtp(String otpToVerify) {
      Otp foundOtp=otpRepository.findByOtp(otpToVerify)
-                                .orElseThrow(()-> new OtpNotFoundException("otp not found"));
+                                .orElseThrow(()->
+                                        new InvalidOtp("Otp might be invalid or expired. Please try again, or request another otp"));
 
      foundOtp.setActive(false);
 
